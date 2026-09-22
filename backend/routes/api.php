@@ -15,6 +15,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/posts', [ApiPostController::class, 'index']);
 Route::get('/posts/latest', [ApiPostController::class, 'latest']);
+Route::get('/posts/search', [ApiPostController::class, 'search']);
 Route::get('/posts/{post}', [ApiPostController::class, 'show']);
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
 
