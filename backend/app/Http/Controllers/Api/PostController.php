@@ -20,7 +20,20 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        return response()->json($post);
+        $related = Post::where('status', 'published')
+            ->where('id', '!=', $post->id)
+            ->where(function ($builder) use ($post) {
+                $builder->where('user_id', $post->user_id)
+                        ->orWhere('title', 'like', '%' . explode(' ', $post->title)[0] . '%');
+            })
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return response()->json([
+            'post' => $post,
+            'related_posts' => $related,
+        ]);
     }
 
     public function store(Request $request)
@@ -76,6 +89,23 @@ class PostController extends Controller
         $posts = Post::where('status', 'published')
             ->latest()
             ->take(3)
+            ->get();
+
+        return response()->json($posts);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->validate([
+            'q' => 'required|string|min:2',
+        ])['q'];
+
+        $posts = Post::where('status', 'published')
+            ->where(function ($builder) use ($query) {
+                $builder->where('title', 'like', "%{$query}%")
+                        ->orWhere('content', 'like', "%{$query}%");
+            })
+            ->latest()
             ->get();
 
         return response()->json($posts);
