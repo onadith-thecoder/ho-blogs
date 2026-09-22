@@ -1,98 +1,67 @@
-# Blog Web App Test
+# HO Blogs — Backend (Laravel API)
 
-A multi-user blog platform built with Laravel, where registered users can create, edit, and manage their own blog posts, while anyone can read published posts without an account.
+REST API for HO Blogs. Auth, posts, comments, and search — consumed by the React frontend in a separate part of this workflow.
 
-Built as a structured learning project following a real software development lifecycle: requirements gathering, planning, design, development, testing, and documentation — with professional Git/GitHub practices throughout.
+## Tech stack
+Laravel 13, MySQL, Sanctum (token-based auth)
 
-## Features
+## Setup
+```bash
+git clone https://github.com/onadith-thecoder/ho-blogs.git
+cd ho-blogs/backend
+composer install
+copy .env.example .env
+php artisan key:generate
+```
+Edit `.env`:
+```
+DB_DATABASE=ho_blogs
+DB_USERNAME=root
+DB_PASSWORD=
+```
+```bash
+php artisan migrate
+php artisan serve
+```
+API now runs at `http://localhost:8000/api`.
 
-- User registration and authentication (Laravel Breeze)
-- Public blog reading — no account required
-- Authenticated users can create, edit, and delete their own posts
-- Post fields: title, slug (auto-generated), excerpt, content, featured image, draft/published status
-- Author-only authorization on edit/delete (enforced server-side, not just hidden in the UI)
-- REST API with token-based authentication (Laravel Sanctum), fully testable in Postman
-- Automated test suite (Pest) covering authentication, authorization, and CRUD behavior
+## Authentication
+Token-based via Sanctum — **not** cookies. After login/register, send the returned token on every authenticated request:
+```
+Authorization: Bearer <token>
+```
 
-## Tech Stack
+## Endpoints
 
-- **Backend:** Laravel 13, PHP 8.3
-- **Database:** MySQL
-- **Auth:** Laravel Breeze (web), Laravel Sanctum (API)
-- **Testing:** Pest
-- **API Testing:** Postman
-- **Local environment:** Laragon
+| Method | Endpoint | Auth? | Body | Notes |
+|---|---|---|---|---|
+| POST | `/api/register` | No | `name, email, password, password_confirmation` | Returns `{ user, token }`, `201` |
+| POST | `/api/login` | No | `email, password` | Returns `{ user, token }` |
+| POST | `/api/logout` | Yes | — | Revokes current token |
+| GET | `/api/posts` | No | — | Paginated (10/page), published only |
+| GET | `/api/posts/latest` | No | — | Last 3 published posts — **use this for the homepage** |
+| GET | `/api/posts/search?q=` | No | — | `q` min 2 chars; matches title/content |
+| GET | `/api/posts/{id}` | No | — | Returns `{ post, related_posts }` — **not** a flat post object |
+| POST | `/api/posts` | Yes | `title, excerpt, content, status (draft\|published)` | `201` |
+| PUT | `/api/posts/{id}` | Yes | same as above | Author-only, `403` otherwise |
+| DELETE | `/api/posts/{id}` | Yes | — | Author-only |
+| GET | `/api/posts/{id}/comments` | No | — | List with commenter name |
+| POST | `/api/posts/{id}/comments` | Yes | `body` | `201`, returns comment + `user: {id, name}` |
+| DELETE | `/api/comments/{id}` | Yes | — | Author-only |
 
-## Installation
+## Example: full auth → post → comment flow
+```
+POST /api/register  → { token }
+POST /api/posts      (Authorization: Bearer <token>) → { id: 5, ... }
+GET  /api/posts/5    → { post: {...}, related_posts: [...] }
+POST /api/posts/5/comments  (Authorization: Bearer <token>) → { body: "..." }
+```
 
-1. Clone the repository
-   *bash
-   git clone https://github.com/onadith-thecoder/blog-webapp-test.git
-   cd blog-webapp-test
-   *
-
-2. Install dependencies
-   *bash
-   composer install
-   npm install
-   *
-
-3. Set up environment
-   *bash
-   cp .env.example .env
-   php artisan key:generate
-   *
-   Then update `.env` with your MySQL database credentials.
-
-4. Run migrations
-   *bash
-   php artisan migrate
-   *
-
-5. Link storage (for image uploads)
-   *bash
-   php artisan storage:link
-   *
-
-6. Build frontend assets
-   *bash
-   npm run build
-   *
-
-7. Start the server
-   *bash
-   php artisan serve
-   *
-   Visit `http://127.0.0.1:8000`
-
-## Running Tests
-
+## Running tests
 ```bash
 php artisan test
 ```
 
-## API Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| POST | `/api/login` | Log in and receive an API token | No |
-| POST | `/api/logout` | Revoke current token | Yes |
-| GET | `/api/posts` | List published posts | No |
-| GET | `/api/posts/{id}` | View a single post | No |
-| POST | `/api/posts` | Create a post | Yes |
-| PUT | `/api/posts/{id}` | Update own post | Yes |
-| DELETE | `/api/posts/{id}` | Delete own post | Yes |
-
-Authenticated requests require an `Authorization: Bearer {token}` header.
-
-## Future Improvements
-
-- Comments and likes on posts
-- Post categories/tags
-- User bio and avatar
-- Frontend styling (currently unstyled by design, to focus on backend functionality)
-- Deployment to a live hosting environment
-
-## Author
-
-Venuka ([@onadith-thecoder](https://github.com/onadith-thecoder))
+## Team
+- Onadith — Backend (Laravel API)
+- Hashen — Frontend (React)
