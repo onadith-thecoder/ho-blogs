@@ -12,6 +12,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/posts', [ApiPostController::class, 'index']);
+Route::get('/posts/latest', [ApiPostController::class, 'latest']);
 Route::get('/posts/{post}', [ApiPostController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {

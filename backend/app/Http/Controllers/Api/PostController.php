@@ -70,4 +70,15 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Post deleted successfully']);
     }
+
+        public function latest()
+    {
+        $posts = Post::where('status', 'published')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return response()->json($posts);
+    }
+
 }
