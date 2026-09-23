@@ -16,12 +16,14 @@ export default function CreatePost() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
+          name="title"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="border border-gray-300 rounded p-2"
         />
         <textarea
+            name="excerpt"
           placeholder="Excerpt (short summary)"
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
@@ -29,6 +31,7 @@ export default function CreatePost() {
           rows={2}
         />
         <textarea
+        name="content"
           placeholder="Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
