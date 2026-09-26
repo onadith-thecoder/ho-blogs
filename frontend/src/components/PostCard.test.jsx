@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 import PostCard from "./PostCard";
 
 const mockPost = {
@@ -12,17 +13,29 @@ const mockPost = {
 
 describe("PostCard", () => {
   it("renders the post title", () => {
-    render(<PostCard post={mockPost} />);
+    render(
+      <MemoryRouter>
+        <PostCard post={mockPost} />
+      </MemoryRouter>
+    );
     expect(screen.getByText("Test Post Title")).toBeInTheDocument();
   });
 
   it("renders the author name", () => {
-    render(<PostCard post={mockPost} />);
+    render(
+      <MemoryRouter>
+        <PostCard post={mockPost} />
+      </MemoryRouter>
+    );
     expect(screen.getByText(/Hashen/)).toBeInTheDocument();
   });
 
   it("renders the excerpt", () => {
-    render(<PostCard post={mockPost} />);
+    render(
+      <MemoryRouter>
+        <PostCard post={mockPost} />
+      </MemoryRouter>
+    );
     expect(screen.getByText("This is a test excerpt.")).toBeInTheDocument();
   });
 });
