@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import { AuthProvider } from "./context/AuthContext";
 import Register from "./pages/Register";
 import PostView from "./pages/PostView";
+import SearchResults from "./pages/SearchResults";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/posts/:id" element={<PostView />} />
+          <Route path="/search" element={<SearchResults />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
