@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import Home from "./Home";
 import apiClient from "../api/client";
+import { MemoryRouter } from "react-router-dom";
 
 vi.mock("../api/client");
 
@@ -15,20 +16,32 @@ const mockApiPosts = [
 describe("Home", () => {
   it("renders the page heading", async () => {
   apiClient.get.mockResolvedValue({ data: { data: mockApiPosts } });
-  render(<Home />);
+  render(
+  <MemoryRouter>
+    <Home />
+  </MemoryRouter>
+);
   expect(screen.getByText("Latest Posts")).toBeInTheDocument();
   await screen.findByText("First Post");
 });
 
   it("shows posts returned from the API", async () => {
     apiClient.get.mockResolvedValue({ data: { data: mockApiPosts } });
-    render(<Home />);
+    render(
+  <MemoryRouter>
+    <Home />
+  </MemoryRouter>
+);
     expect(await screen.findByText("First Post")).toBeInTheDocument();
   });
 
   it("shows at most 3 posts even if the API returns more", async () => {
     apiClient.get.mockResolvedValue({ data: { data: mockApiPosts } });
-    render(<Home />);
+    render(
+  <MemoryRouter>
+    <Home />
+  </MemoryRouter>
+);
     await screen.findByText("First Post");
     const posts = screen.getAllByRole("heading", { level: 2 });
     expect(posts.length).toBeLessThanOrEqual(3);
@@ -36,7 +49,11 @@ describe("Home", () => {
 
   it("shows an error message if the API call fails", async () => {
     apiClient.get.mockRejectedValue(new Error("Network error"));
-    render(<Home />);
+    render(
+  <MemoryRouter>
+    <Home />
+  </MemoryRouter>
+);
     expect(
       await screen.findByText("Could not load posts. Please try again later.")
     ).toBeInTheDocument();
