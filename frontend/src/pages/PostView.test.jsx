@@ -1,4 +1,3 @@
-
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -22,16 +21,21 @@ function renderPostView(id = "1") {
 
 describe("PostView", () => {
   it("renders the post title and content", async () => {
-    apiClient.get.mockResolvedValue({
-      data: {
-        post: {
-          id: 1,
-          title: "My Test Post",
-          content: "Full post content here.",
-          created_at: "2026-09-20T10:00:00Z",
+    apiClient.get.mockImplementation((url) => {
+      if (url.endsWith("/comments")) {
+        return Promise.resolve({ data: [] });
+      }
+      return Promise.resolve({
+        data: {
+          post: {
+            id: 1,
+            title: "My Test Post",
+            content: "Full post content here.",
+            created_at: "2026-09-20T10:00:00Z",
+          },
+          related_posts: [],
         },
-        related_posts: [],
-      },
+      });
     });
 
     renderPostView("1");
@@ -41,16 +45,21 @@ describe("PostView", () => {
   });
 
   it("renders related posts when present", async () => {
-    apiClient.get.mockResolvedValue({
-      data: {
-        post: {
-          id: 1,
-          title: "My Test Post",
-          content: "Full post content here.",
-          created_at: "2026-09-20T10:00:00Z",
+    apiClient.get.mockImplementation((url) => {
+      if (url.endsWith("/comments")) {
+        return Promise.resolve({ data: [] });
+      }
+      return Promise.resolve({
+        data: {
+          post: {
+            id: 1,
+            title: "My Test Post",
+            content: "Full post content here.",
+            created_at: "2026-09-20T10:00:00Z",
+          },
+          related_posts: [{ id: 2, title: "A Related Post" }],
         },
-        related_posts: [{ id: 2, title: "A Related Post" }],
-      },
+      });
     });
 
     renderPostView("1");
