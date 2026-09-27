@@ -12,6 +12,8 @@ export default function EditPost() {
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("published");
+  const [featuredImage, setFeaturedImage] = useState(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -25,6 +27,7 @@ export default function EditPost() {
         setExcerpt(post.excerpt);
         setContent(post.content);
         setStatus(post.status);
+        setCurrentImageUrl(post.featured_image_url);
       })
       .catch(() => {
         setError("Could not load this post.");
@@ -40,11 +43,20 @@ export default function EditPost() {
     setSaving(true);
 
     try {
-      await apiClient.put(
-        `/posts/${id}`,
-        { title, excerpt, content, status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("excerpt", excerpt);
+      formData.append("content", content);
+      formData.append("status", status);
+      if (featuredImage) formData.append("featured_image", featuredImage);
+      formData.append("_method", "PUT");
+
+      await apiClient.post(`/posts/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       navigate(`/posts/${id}`);
     } catch (err) {
       if (err.response?.status === 403) {
@@ -92,6 +104,25 @@ export default function EditPost() {
           <option value="published">Publish</option>
           <option value="draft">Save as draft</option>
         </select>
+
+        {currentImageUrl && (
+          <div>
+            <p className="text-sm text-gray-600 mb-1">Current image:</p>
+            <img src={currentImageUrl} alt="" className="w-40 h-24 object-cover rounded" />
+          </div>
+        )}
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">
+            Replace image (optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFeaturedImage(e.target.files[0])}
+            className="border border-gray-300 rounded p-2 w-full"
+          />
+        </div>
+
         {error && <p className="text-red-600 text-sm">{error}</p>}
         <button
           type="submit"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../api/client";
@@ -15,6 +14,11 @@ export default function PostView() {
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
 
+  // Comments state
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [submittingComment, setSubmittingComment] = useState(false);
+
   useEffect(() => {
     apiClient
       .get(`/posts/${id}`)
@@ -28,6 +32,14 @@ export default function PostView() {
       .finally(() => {
         setLoading(false);
       });
+  }, [id]);
+
+  // Fetch comments
+  useEffect(() => {
+    apiClient
+      .get(`/posts/${id}/comments`)
+      .then((response) => setComments(response.data))
+      .catch(() => {});
   }, [id]);
 
   async function handleDelete() {
@@ -48,6 +60,26 @@ export default function PostView() {
     }
   }
 
+  async function handleAddComment(e) {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setSubmittingComment(true);
+    try {
+      const response = await apiClient.post(
+        `/posts/${id}/comments`,
+        { body: newComment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setComments([response.data, ...comments]);
+      setNewComment("");
+    } catch {
+      setError("Could not post your comment.");
+    } finally {
+      setSubmittingComment(false);
+    }
+  }
+
   if (loading) return <p className="max-w-2xl mx-auto p-6 text-gray-500">Loading...</p>;
   if (error) return <p className="max-w-2xl mx-auto p-6 text-red-600">{error}</p>;
   if (!post) return null;
@@ -59,6 +91,14 @@ export default function PostView() {
       <Link to="/" className="text-sm text-gray-500 hover:underline">
         ← Back to posts
       </Link>
+
+      {post.featured_image_url && (
+        <img
+          src={post.featured_image_url}
+          alt={post.title}
+          className="w-full h-64 object-cover rounded mt-4"
+        />
+      )}
 
       <div className="flex items-start justify-between mt-4">
         <h1 className="text-3xl font-bold">{post.title}</h1>
@@ -105,6 +145,51 @@ export default function PostView() {
           </ul>
         </div>
       )}
+
+      {/* Comments Section */}
+      <div className="mt-10 border-t border-gray-200 pt-6">
+        <h2 className="text-lg font-semibold mb-3">Comments</h2>
+        {user ? (
+          <form onSubmit={handleAddComment} className="flex flex-col gap-2 mb-6">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              className="border border-gray-300 rounded p-2"
+              rows={3}
+            />
+            <button
+              type="submit"
+              disabled={submittingComment}
+              className="self-start bg-black text-white rounded px-4 py-1.5 text-sm hover:bg-gray-800 disabled:opacity-50"
+            >
+              {submittingComment ? "Posting..." : "Post Comment"}
+            </button>
+          </form>
+        ) : (
+          <p className="text-sm text-gray-500 mb-6">
+            <Link to="/login" className="underline">
+              Log in
+            </Link>{" "}
+            to leave a comment.
+          </p>
+        )}
+
+        {comments.length === 0 ? (
+          <p className="text-sm text-gray-500">No comments yet.</p>
+        ) : (
+          <ul className="space-y-4">
+            {comments.map((comment) => (
+              <li key={comment.id} className="border-b border-gray-100 pb-3">
+                <p className="text-sm font-medium">
+                  {comment.user?.name ?? "Unknown"}
+                </p>
+                <p className="text-gray-700 text-sm mt-1">{comment.body}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </main>
   );
 }
