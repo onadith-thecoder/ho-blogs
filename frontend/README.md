@@ -1,16 +1,53 @@
-# React + Vite
+# HO Blogs — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite + Tailwind frontend for the HO Blogs student project.
 
-Currently, two official plugins are available:
+## Tech Stack
+- React 19, Vite, Tailwind CSS
+- React Router DOM (client-side routing)
+- Axios (API client)
+- Vitest + Testing Library (automated tests)
+- Laravel Sanctum (token-based auth, consumed from the backend)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Setup
 
-## React Compiler
+1. Clone the repo and go into this folder:
+```bash
+   git clone https://github.com/onadith-thecoder/ho-blogs.git
+   cd ho-blogs/frontend
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. Install dependencies:
+```bash
+   npm install
+```
 
-## Expanding the ESLint configuration
+3. Set up your environment file:
+```bash
+   cp .env.example .env
+```
+   Make sure `VITE_API_URL` points at your running backend (default: `http://localhost:8000/api`).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+4. Start the dev server:
+```bash
+   npm run dev
+```
+   Visit `http://localhost:5173`.
+
+**Note:** the backend (`../backend`) must be running separately (`php artisan serve`) for the app to actually load or save any data.
+
+## Running Tests
+
+```bash
+npm test
+```
+
+## Features
+- User registration and login (Sanctum token-based auth), with session persisted across page refresh
+- View latest published posts on the homepage
+- View a single post with related posts
+- Create, edit, and delete your own posts (author-only, enforced both in the UI and the API)
+- Search posts by title or content
+
+## Testing
+16 automated tests covering PostCard, Home, Login, Register, and PostView, using mocked API responses (no live backend required to run tests).
