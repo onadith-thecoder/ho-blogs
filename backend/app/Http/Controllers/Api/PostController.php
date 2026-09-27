@@ -11,7 +11,8 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::where('status', 'published')
+        $posts = Post::with('user:id,name')
+            ->where('status', 'published')
             ->latest()
             ->paginate(10);
 
@@ -25,7 +26,10 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        $related = Post::where('status', 'published')
+        $post->load('user:id,name');
+
+        $related = Post::with('user:id,name')
+            ->where('status', 'published')
             ->where('id', '!=', $post->id)
             ->where(function ($builder) use ($post) {
                 $builder->where('user_id', $post->user_id)
@@ -104,7 +108,8 @@ class PostController extends Controller
 
     public function latest()
     {
-        $posts = Post::where('status', 'published')
+        $posts = Post::with('user:id,name')
+            ->where('status', 'published')
             ->latest()
             ->take(3)
             ->get()
@@ -122,7 +127,8 @@ class PostController extends Controller
             'q' => 'required|string|min:2',
         ])['q'];
 
-        $posts = Post::where('status', 'published')
+        $posts = Post::with('user:id,name')
+            ->where('status', 'published')
             ->where(function ($builder) use ($query) {
                 $builder->where('title', 'like', "%{$query}%")
                         ->orWhere('content', 'like', "%{$query}%");
