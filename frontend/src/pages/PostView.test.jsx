@@ -1,18 +1,21 @@
-// src/pages/PostView.test.jsx
+
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import PostView from "./PostView";
 import apiClient from "../api/client";
+import { AuthProvider } from "../context/AuthContext";
 
 vi.mock("../api/client");
 
 function renderPostView(id = "1") {
   return render(
     <MemoryRouter initialEntries={[`/posts/${id}`]}>
-      <Routes>
-        <Route path="/posts/:id" element={<PostView />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/posts/:id" element={<PostView />} />
+        </Routes>
+      </AuthProvider>
     </MemoryRouter>
   );
 }
