@@ -8,6 +8,7 @@ export default function CreatePost() {
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("published");
+  const [featuredImage, setFeaturedImage] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,11 +21,19 @@ export default function CreatePost() {
     setLoading(true);
 
     try {
-      await apiClient.post(
-        "/posts",
-        { title, excerpt, content, status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("excerpt", excerpt);
+      formData.append("content", content);
+      formData.append("status", status);
+      if (featuredImage) formData.append("featured_image", featuredImage);
+
+      await apiClient.post("/posts", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       navigate("/");
     } catch (err) {
       if (err.response?.status === 422) {
@@ -76,6 +85,17 @@ export default function CreatePost() {
           <option value="published">Publish now</option>
           <option value="draft">Save as draft</option>
         </select>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">
+            Featured image (optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFeaturedImage(e.target.files[0])}
+            className="border border-gray-300 rounded p-2 w-full"
+          />
+        </div>
         {error && <p className="text-red-600 text-sm">{error}</p>}
         <button
           type="submit"

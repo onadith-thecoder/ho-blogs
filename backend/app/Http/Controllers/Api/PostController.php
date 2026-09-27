@@ -43,12 +43,18 @@ class PostController extends Controller
             'excerpt' => 'required|string|max:255',
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
+            'featured_image' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
         $validated['user_id'] = $request->user()->id;
 
         $post = Post::create($validated);
+        $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
 
         return response()->json($post, 201);
     }
@@ -64,11 +70,17 @@ class PostController extends Controller
             'excerpt' => 'required|string|max:255',
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
+            'featured_image' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
 
         $post->update($validated);
+        $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
 
         return response()->json($post);
     }
