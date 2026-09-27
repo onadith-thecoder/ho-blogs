@@ -19,9 +19,12 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="border-b border-gray-200 px-6 py-4 flex items-center justify-between gap-4">
-      <Link to="/" className="text-lg font-bold shrink-0">
-        HO Blogs
+    <nav className="sticky top-0 z-10 backdrop-blur-md bg-bg-dark-2/60 border-b border-teal/30 px-6 py-4 flex items-center justify-between gap-4">
+      <Link
+        to="/"
+        className="font-heading text-lg font-bold tracking-tight shrink-0 bg-gradient-to-r from-mustard to-teal-soft bg-clip-text text-transparent"
+      >
+        HO BLOGS
       </Link>
 
       <form onSubmit={handleSearch} className="flex-1 max-w-xs">
@@ -30,30 +33,39 @@ export default function Navbar() {
           placeholder="Search posts..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+          className="w-full rounded-full bg-bg-dark/60 border border-teal/40 px-4 py-2 text-sm text-offwhite placeholder-muted
+                     focus:outline-none focus:border-mustard focus:ring-2 focus:ring-mustard/40 transition"
         />
       </form>
 
-      <div className="flex gap-4 items-center shrink-0">
+      <div className="flex gap-5 items-center shrink-0 text-sm font-medium uppercase tracking-wide">
         {user ? (
           <>
-            <Link to="/create" className="text-gray-700 hover:text-black">
+            <Link
+              to="/create"
+              className="rounded-full bg-mustard text-bg-dark px-4 py-1.5 font-semibold shadow-[0_0_0_0_rgba(223,175,52,0)]
+                         hover:shadow-[0_0_18px_2px_rgba(223,175,52,0.45)] transition-shadow duration-300"
+            >
               New Post
             </Link>
-            <span className="text-gray-500 text-sm">Hi, {user.name}</span>
+            <span className="text-muted normal-case">Hi, {user.name}</span>
             <button
               onClick={handleLogout}
-              className="text-gray-700 hover:text-black"
+              className="text-offwhite/80 hover:text-mustard transition-colors"
             >
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="text-gray-700 hover:text-black">
+            <Link to="/login" className="relative text-offwhite/80 hover:text-mustard transition-colors
+              after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1.5px] after:bg-mustard
+              after:transition-all hover:after:w-full">
               Login
             </Link>
-            <Link to="/register" className="text-gray-700 hover:text-black">
+            <Link to="/register" className="relative text-offwhite/80 hover:text-mustard transition-colors
+              after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1.5px] after:bg-mustard
+              after:transition-all hover:after:w-full">
               Register
             </Link>
           </>

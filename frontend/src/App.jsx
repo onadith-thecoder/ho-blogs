@@ -12,17 +12,21 @@ import SearchResults from "./pages/SearchResults";
 function App() {
   return (
     <AuthProvider>
+      <div className="bg-ambient" />
+      <div className="bg-overlay" />
       <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<CreatePost />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/posts/:id" element={<PostView />} />
-          <Route path="/posts/:id/edit" element={<EditPost />} />
-          <Route path="/search" element={<SearchResults />} />
-        </Routes>
+        <div className="min-h-screen">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/create" element={<CreatePost />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/posts/:id" element={<PostView />} />
+            <Route path="/posts/:id/edit" element={<EditPost />} />
+            <Route path="/search" element={<SearchResults />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );

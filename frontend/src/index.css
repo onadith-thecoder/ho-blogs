@@ -1,1 +1,56 @@
 @import "tailwindcss";
+
+@theme {
+  --color-teal: #0F7476;
+  --color-teal-soft: #14a5a8;
+  --color-mustard: #DFAF34;
+  --color-mustard-soft: #f0c765;
+  --color-bg-dark: #0A1F1E;
+  --color-bg-dark-2: #0D2624;
+  --color-offwhite: #F4F1E9;
+  --color-muted: #A9B8B6;
+  --color-danger: #E2725B;
+  --font-heading: "Space Grotesk", sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-dark);
+    color: var(--color-offwhite);
+    font-family: "Inter", sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+}
+
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: url('/leaf-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px) saturate(2);
+  transform: scale(1.15);
+  opacity: 5;
+  animation: drift 40s ease-in-out infinite alternate;
+}
+
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(10,31,30,0.72), rgba(13,38,36,0.88));
+}
+
+@keyframes drift {
+  from { background-position: 45% 40%; }
+  to   { background-position: 55% 60%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-ambient { animation: none; }
+}
