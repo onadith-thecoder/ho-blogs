@@ -1,0 +1,48 @@
+const mockPosts = [
+  {
+    id: 1,
+    title: "Building a Blog API with Laravel Sanctum",
+    slug: "building-a-blog-api-with-laravel-sanctum",
+    excerpt: "How token-based auth works and why it fits a small student project.",
+    content: "Full post content goes here...",
+    featured_image: null,
+    status: "published",
+    created_at: "2026-09-20T10:00:00Z",
+    user: { name: "Venuka" },
+  },
+  {
+    id: 2,
+    title: "Setting Up React, Vite and Tailwind From Scratch",
+    slug: "setting-up-react-vite-tailwind",
+    excerpt: "A quick walkthrough of getting a modern frontend toolchain running.",
+    content: "Full post content goes here...",
+    featured_image: null,
+    status: "published",
+    created_at: "2026-09-19T14:30:00Z",
+    user: { name: "Hashen" },
+  },
+  {
+    id: 3,
+    title: "Why We Chose Sanctum Over Passport",
+    slug: "why-sanctum-over-passport",
+    excerpt: "Weighing simplicity against features for a small SPA.",
+    content: "Full post content goes here...",
+    featured_image: null,
+    status: "published",
+    created_at: "2026-09-18T09:15:00Z",
+    user: { name: "Venuka" },
+  },
+  {
+    id: 4,
+    title: "Draft: Notes on Testing Strategy",
+    slug: "draft-notes-on-testing-strategy",
+    excerpt: "Unfinished thoughts on Pest vs PHPUnit.",
+    content: "Full post content goes here...",
+    featured_image: null,
+    status: "draft",
+    created_at: "2026-09-17T08:00:00Z",
+    user: { name: "Hashen" },
+  },
+];
+
+export default mockPosts;

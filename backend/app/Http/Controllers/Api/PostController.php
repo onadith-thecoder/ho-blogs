@@ -11,18 +11,41 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::where('status', 'published')
+        $posts = Post::with('user:id,name')
+            ->where('status', 'published')
             ->latest()
             ->paginate(10);
+
+        $posts->getCollection()->transform(function ($post) {
+            $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
+            return $post;
+        });
 
         return response()->json($posts);
     }
 
     public function show(Post $post)
     {
-        return response()->json($post);
-    }
+        $post->load('user:id,name');
 
+        $related = Post::with('user:id,name')
+            ->where('status', 'published')
+            ->where('id', '!=', $post->id)
+            ->where(function ($builder) use ($post) {
+                $builder->where('user_id', $post->user_id)
+                        ->orWhere('title', 'like', '%' . explode(' ', $post->title)[0] . '%');
+            })
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
+
+        return response()->json([
+            'post' => $post,
+            'related_posts' => $related,
+        ]);
+    }
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -30,12 +53,18 @@ class PostController extends Controller
             'excerpt' => 'required|string|max:255',
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
+            'featured_image' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
         $validated['user_id'] = $request->user()->id;
 
         $post = Post::create($validated);
+        $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
 
         return response()->json($post, 201);
     }
@@ -51,11 +80,17 @@ class PostController extends Controller
             'excerpt' => 'required|string|max:255',
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
+            'featured_image' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
 
         $post->update($validated);
+        $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
 
         return response()->json($post);
     }
@@ -70,4 +105,38 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Post deleted successfully']);
     }
+
+    public function latest()
+    {
+        $posts = Post::with('user:id,name')
+            ->where('status', 'published')
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function ($post) {
+                $post->featured_image_url = $post->featured_image ? asset('storage/' . $post->featured_image) : null;
+                return $post;
+            });
+
+        return response()->json($posts);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->validate([
+            'q' => 'required|string|min:2',
+        ])['q'];
+
+        $posts = Post::with('user:id,name')
+            ->where('status', 'published')
+            ->where(function ($builder) use ($query) {
+                $builder->where('title', 'like', "%{$query}%")
+                        ->orWhere('content', 'like', "%{$query}%");
+            })
+            ->latest()
+            ->get();
+
+        return response()->json($posts);
+    }
+
 }
